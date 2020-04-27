@@ -27,14 +27,13 @@ variable "allowed_cidr_blocks" {
   description = "List of CIDR blocks to be allowed to connect to the cluster"
 }
 
-variable "vpc_id" {
-  type        = string
-  description = "VPC ID"
-}
-
-variable "subnet_ids" {
-  type        = list(string)
-  description = "Subnet ids"
+variable "vpc_options" {
+  description = "List of maps of options for publishing slow logs to CloudWatch Logs."
+  type = object({
+    vpc_id     = string
+    subnet_ids = list(string)
+  })
+  default = null
 }
 
 variable "elasticsearch_version" {

@@ -9,8 +9,8 @@ locals {
 }
 
 resource "aws_security_group" "default" {
-  count       = var.enabled ? 1 : 0
-  vpc_id      = var.vpc_id
+  count       = var.enabled && var.vpc_options != null ? 1 : 0
+  vpc_id      = lookup(var.vpc_options, "vpc_id")
   name        = var.domain_name
   description = "Allow inbound traffic from Security Groups and CIDRs."
   tags = merge(
@@ -22,7 +22,7 @@ resource "aws_security_group" "default" {
 }
 
 resource "aws_security_group_rule" "ingress_security_groups" {
-  count                    = var.enabled ? length(var.security_groups) : 0
+  count                    = var.enabled && var.vpc_options != null ? length(var.security_groups) : 0
   description              = "Allow inbound traffic from Security Groups"
   type                     = "ingress"
   from_port                = 0
@@ -33,7 +33,7 @@ resource "aws_security_group_rule" "ingress_security_groups" {
 }
 
 resource "aws_security_group_rule" "ingress_cidr_blocks" {
-  count             = var.enabled && length(var.allowed_cidr_blocks) > 0 ? 1 : 0
+  count             = var.enabled && var.vpc_options != null && length(var.allowed_cidr_blocks) > 0 ? 1 : 0
   description       = "Allow inbound traffic from CIDR blocks"
   type              = "ingress"
   from_port         = 0
@@ -44,7 +44,7 @@ resource "aws_security_group_rule" "ingress_cidr_blocks" {
 }
 
 resource "aws_security_group_rule" "egress" {
-  count             = var.enabled ? 1 : 0
+  count             = var.enabled && var.vpc_options != null ? 1 : 0
   description       = "Allow all egress traffic"
   type              = "egress"
   from_port         = 0
@@ -170,9 +170,12 @@ resource "aws_elasticsearch_domain" "default" {
     enabled = var.node_to_node_encryption_enabled
   }
 
-  vpc_options {
-    security_group_ids = [aws_security_group.default[0].id]
-    subnet_ids         = var.subnet_ids
+  dynamic "vpc_options" {
+    for_each = var.vpc_options == null ? [] : [var.vpc_options]
+    content {
+      security_group_ids = [aws_security_group.default[0].id]
+      subnet_ids         = vpc_options.value.subnet_ids
+    }
   }
 
   snapshot_options {
@@ -198,7 +201,6 @@ data "aws_iam_policy_document" "default" {
     actions = distinct(compact(var.iam_actions))
 
     resources = [
-      join("", aws_elasticsearch_domain.default.*.arn),
       "${join("", aws_elasticsearch_domain.default.*.arn)}/*",
     ]
 
