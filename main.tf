@@ -212,7 +212,13 @@ data "aws_iam_policy_document" "default" {
 }
 
 resource "aws_elasticsearch_domain_policy" "default" {
-  count           = var.enabled && (length(var.iam_authorizing_role_arns) > 0 || length(var.iam_role_arns) > 0) ? 1 : 0
+  count           = var.enabled && (length(var.iam_authorizing_role_arns) > 0 || length(var.iam_role_arns) > 0) && length(var.access_policies) == 0 ? 1 : 0
   domain_name     = var.domain_name
   access_policies = join("", data.aws_iam_policy_document.default.*.json)
+}
+
+resource "aws_elasticsearch_domain_policy" "custom" {
+  count           = var.enabled && (length(var.iam_authorizing_role_arns) == 0 || length(var.iam_role_arns) == 0) && length(var.access_policies) > 0 ? 1 : 0
+  domain_name     = var.domain_name
+  access_policies = var.access_policies
 }

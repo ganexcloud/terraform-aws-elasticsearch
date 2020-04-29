@@ -71,6 +71,12 @@ variable "iam_actions" {
   description = "List of actions to allow for the IAM roles, _e.g._ `es:ESHttpGet`, `es:ESHttpPut`, `es:ESHttpPost`"
 }
 
+variable "access_policies" {
+  description = "(Optional) IAM policy document specifying the access policies for the domain"
+  type        = string
+  default     = ""
+}
+
 variable "zone_awareness_enabled" {
   type        = bool
   default     = false
