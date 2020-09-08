@@ -174,3 +174,15 @@ variable "node_to_node_encryption_enabled" {
   default     = "false"
   description = "Whether to enable node-to-node encryption"
 }
+
+variable "domain_endpoint_options_enforce_https" {
+  description = "Whether or not to require HTTPS"
+  default     = false
+  type        = bool
+}
+
+variable "domain_endpoint_options_tls_security_policy" {
+  description = "The name of the TLS security policy that needs to be applied to the HTTPS endpoint"
+  default     = "Policy-Min-TLS-1-0-2019-07"
+  type        = string
+}
