@@ -117,7 +117,7 @@ data "aws_iam_policy_document" "elasticsearch-log-publishing-policy" {
       "logs:PutLogEventsBatch",
     ]
 
-    resources = [aws_cloudwatch_log_group.cloudwatch[0].arn]
+    resources = ["${aws_cloudwatch_log_group.cloudwatch[0].arn}:*"]
 
     principals {
       identifiers = ["es.amazonaws.com"]
