@@ -67,7 +67,7 @@ resource "aws_cloudwatch_log_resource_policy" "cloudwatch_policy" {
 }
 
 data "aws_iam_role" "default" {
-  count = var.enabled && var.create_iam_service_linked_role ? 1 : 0
+  count = var.enabled && var.create_iam_service_linked_role == false ? 1 : 0
   name  = "AWSServiceRoleForAmazonElasticsearchService"
 }
 
