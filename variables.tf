@@ -186,3 +186,33 @@ variable "domain_endpoint_options_tls_security_policy" {
   default     = "Policy-Min-TLS-1-0-2019-07"
   type        = string
 }
+
+variable "advanced_security_options_enabled" {
+  type        = bool
+  default     = false
+  description = "AWS Elasticsearch Kibana enchanced security plugin enabling (forces new resource)"
+}
+
+variable "advanced_security_options_internal_user_database_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether to enable or not internal Kibana user database for ELK OpenDistro security plugin"
+}
+
+variable "advanced_security_options_master_user_arn" {
+  type        = string
+  default     = ""
+  description = "ARN of IAM user who is to be mapped to be Kibana master user (applicable if advanced_security_options_internal_user_database_enabled set to false)"
+}
+
+variable "advanced_security_options_master_user_name" {
+  type        = string
+  default     = ""
+  description = "Master user username (applicable if advanced_security_options_internal_user_database_enabled set to true)"
+}
+
+variable "advanced_security_options_master_user_password" {
+  type        = string
+  default     = ""
+  description = "Master user password (applicable if advanced_security_options_internal_user_database_enabled set to true)"
+}
