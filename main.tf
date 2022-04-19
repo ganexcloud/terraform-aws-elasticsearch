@@ -58,6 +58,7 @@ resource "aws_cloudwatch_log_group" "cloudwatch" {
   count             = length(var.log_publishing_options) > 0 ? 1 : 0
   retention_in_days = var.cloudwatch_log_retention_in_days
   name              = local.cloudwatch_log_group_name
+  tags              = var.tags
 }
 
 resource "aws_cloudwatch_log_resource_policy" "cloudwatch_policy" {
