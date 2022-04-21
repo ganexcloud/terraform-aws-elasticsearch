@@ -234,3 +234,21 @@ variable "custom_endpoint_certificate_arn" {
   description = "ACM certificate ARN for custom endpoint."
   default     = ""
 }
+
+variable "auto_tune_options_desired_state" {
+  type        = string
+  description = "(Required) The Auto-Tune desired state for the domain. Valid values: ENABLED or DISABLED."
+  default     = "DISABLED"
+}
+
+variable "auto_tune_options_rollback_on_disable" {
+  type        = string
+  description = "(Optional) Whether to roll back to default Auto-Tune settings when disabling Auto-Tune. Valid values: DEFAULT_ROLLBACK or NO_ROLLBACK."
+  default     = null
+}
+
+variable "auto_tune_options_maintenance_schedule" {
+  type        = any
+  description = "(Required if rollback_on_disable is set to DEFAULT_ROLLBACK) Configuration block for Auto-Tune maintenance windows."
+  default     = {}
+}

@@ -210,6 +210,27 @@ resource "aws_elasticsearch_domain" "default" {
     }
   }
 
+  auto_tune_options {
+    desired_state       = var.auto_tune_options_desired_state
+    rollback_on_disable = var.auto_tune_options_rollback_on_disable
+
+    dynamic "maintenance_schedule" {
+      #for_each = var.auto_tune_options_maintenance_schedule
+      for_each = length(keys(var.auto_tune_options_maintenance_schedule)) == 0 ? [] : [var.auto_tune_options_maintenance_schedule]
+      content {
+        cron_expression_for_recurrence = lookup(maintenance_schedule.value, "cron_expression_for_recurrence")
+        start_at                       = lookup(maintenance_schedule.value, "start_at")
+
+        dynamic "duration" {
+          for_each = [lookup(maintenance_schedule.value, "duration")]
+          content {
+            unit  = lookup(duration.value, "unit")
+            value = lookup(duration.value, "value")
+          }
+        }
+      }
+    }
+  }
   tags       = var.tags
   depends_on = [aws_iam_service_linked_role.default]
 }
