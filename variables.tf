@@ -126,7 +126,7 @@ variable "cloudwatch_log_group_name" {
 variable "cloudwatch_log_retention_in_days" {
   type        = number
   description = "Cloudwatch logs retention days"
-  default     = 14
+  default     = 30
 }
 
 variable "log_publishing_options" {
