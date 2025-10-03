@@ -169,10 +169,10 @@ variable "create_iam_service_linked_role" {
   description = "Whether to create `AWSServiceRoleForAmazonElasticsearchService` service-linked role. Set it to `false` if you already have an ElasticSearch cluster created in the AWS account and AWSServiceRoleForAmazonElasticsearchService already exists."
 }
 
-variable "service_linked_role_arn" {
+variable "service_linked_role_name" {
   type        = string
   default     = "AWSServiceRoleForAmazonOpenSearchService"
-  description = "ARN of an IAM role that Elasticsearch service can assume to access the VPC resources"
+  description = "ANameRN of an IAM role that Elasticsearch service can assume to access the VPC resources"
 }
 
 variable "node_to_node_encryption_enabled" {

@@ -69,15 +69,14 @@ resource "aws_cloudwatch_log_resource_policy" "cloudwatch_policy" {
 
 data "aws_iam_role" "default" {
   count = var.enabled && var.create_iam_service_linked_role == false ? 1 : 0
-  name  = var.service_linked_role_arn
+  name  = var.service_linked_role_name
 }
 
 # https://github.com/terraform-providers/terraform-provider-aws/issues/5218
 resource "aws_iam_service_linked_role" "default" {
   count            = var.enabled && var.create_iam_service_linked_role ? 1 : 0
-  name             = var.service_linked_role_arn
   aws_service_name = "es.amazonaws.com"
-  description      = "${var.service_linked_role_arn} Service-Linked Role"
+  description      = "${var.service_linked_role_name} Service-Linked Role"
 }
 
 # Role that pods can assume for access to elasticsearch and kibana
