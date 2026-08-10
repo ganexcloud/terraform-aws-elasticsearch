@@ -50,6 +50,7 @@ variable "instance_type" {
 
 variable "instance_count" {
   description = "Number of data nodes in the cluster"
+  type        = any
   default     = 1
 }
 
@@ -91,6 +92,7 @@ variable "availability_zone_count" {
 
 variable "ebs_volume_size" {
   description = "Optionally use EBS volumes for data storage by specifying volume size in GB"
+  type        = any
   default     = 10
 }
 
@@ -101,6 +103,7 @@ variable "ebs_volume_type" {
 }
 
 variable "ebs_iops" {
+  type        = any
   default     = 0
   description = "The baseline input/output (I/O) performance of EBS volumes attached to data nodes. Applicable only for the Provisioned IOPS EBS volume type"
 }
@@ -136,6 +139,7 @@ variable "log_publishing_options" {
 }
 
 variable "automated_snapshot_start_hour" {
+  type        = any
   description = "Hour at which automated snapshots are taken, in UTC"
   default     = 0
 }
@@ -147,6 +151,7 @@ variable "dedicated_master_enabled" {
 }
 
 variable "dedicated_master_count" {
+  type        = any
   description = "Number of dedicated master nodes in the cluster"
   default     = 0
 }
