@@ -1,9 +1,3 @@
-data "aws_caller_identity" "default" {
-}
-
-data "aws_region" "default" {
-}
-
 locals {
   cloudwatch_log_group_name = var.cloudwatch_log_group_name == "" ? "/aws/aes/domains/${var.domain_name}" : var.cloudwatch_log_group_name
 }
@@ -29,7 +23,7 @@ resource "aws_security_group_rule" "ingress_security_groups" {
   to_port                  = 443
   protocol                 = "tcp"
   source_security_group_id = var.security_groups[count.index]
-  security_group_id        = join("", aws_security_group.default.*.id)
+  security_group_id        = join("", aws_security_group.default[*].id)
 }
 
 resource "aws_security_group_rule" "ingress_cidr_blocks" {
@@ -40,7 +34,7 @@ resource "aws_security_group_rule" "ingress_cidr_blocks" {
   to_port           = 443
   protocol          = "tcp"
   cidr_blocks       = var.allowed_cidr_blocks
-  security_group_id = join("", aws_security_group.default.*.id)
+  security_group_id = join("", aws_security_group.default[*].id)
 }
 
 resource "aws_security_group_rule" "egress" {
@@ -51,7 +45,7 @@ resource "aws_security_group_rule" "egress" {
   to_port           = 65535
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = join("", aws_security_group.default.*.id)
+  security_group_id = join("", aws_security_group.default[*].id)
 }
 
 resource "aws_cloudwatch_log_group" "cloudwatch" {
@@ -67,11 +61,6 @@ resource "aws_cloudwatch_log_resource_policy" "cloudwatch_policy" {
   policy_document = data.aws_iam_policy_document.elasticsearch-log-publishing-policy.json
 }
 
-data "aws_iam_role" "default" {
-  count = var.enabled && var.create_iam_service_linked_role == false ? 1 : 0
-  name  = var.service_linked_role_name
-}
-
 # https://github.com/terraform-providers/terraform-provider-aws/issues/5218
 resource "aws_iam_service_linked_role" "default" {
   count            = var.enabled && var.create_iam_service_linked_role ? 1 : 0
@@ -83,7 +72,7 @@ resource "aws_iam_service_linked_role" "default" {
 resource "aws_iam_role" "elasticsearch_user" {
   count              = var.enabled && (length(var.iam_authorizing_role_arns) > 0 || length(var.iam_role_arns) > 0) ? 1 : 0
   name               = "${var.domain_name}-service-role"
-  assume_role_policy = join("", data.aws_iam_policy_document.assume_role.*.json)
+  assume_role_policy = join("", data.aws_iam_policy_document.assume_role[*].json)
   description        = "IAM Role to assume to access the Elasticsearch ${var.domain_name} cluster"
   tags               = var.tags
 }
@@ -248,12 +237,12 @@ data "aws_iam_policy_document" "default" {
     actions = distinct(compact(var.iam_actions))
 
     resources = [
-      "${join("", aws_elasticsearch_domain.default.*.arn)}/*",
+      "${join("", aws_elasticsearch_domain.default[*].arn)}/*",
     ]
 
     principals {
       type        = "AWS"
-      identifiers = distinct(compact(concat(var.iam_role_arns, aws_iam_role.elasticsearch_user.*.arn)))
+      identifiers = distinct(compact(concat(var.iam_role_arns, aws_iam_role.elasticsearch_user[*].arn)))
     }
   }
 }
@@ -261,7 +250,7 @@ data "aws_iam_policy_document" "default" {
 resource "aws_elasticsearch_domain_policy" "default" {
   count           = var.enabled && (length(var.iam_authorizing_role_arns) > 0 || length(var.iam_role_arns) > 0) && length(var.access_policies) == 0 ? 1 : 0
   domain_name     = var.domain_name
-  access_policies = join("", data.aws_iam_policy_document.default.*.json)
+  access_policies = join("", data.aws_iam_policy_document.default[*].json)
 }
 
 resource "aws_elasticsearch_domain_policy" "custom" {
