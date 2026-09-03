@@ -27,6 +27,28 @@ variable "allowed_cidr_blocks" {
   description = "List of CIDR blocks to be allowed to connect to the cluster"
 }
 
+variable "ingress_from_port" {
+  type        = number
+  default     = 0
+  description = "First TCP port allowed by the security group ingress rules."
+
+  validation {
+    condition     = var.ingress_from_port >= 0 && var.ingress_from_port <= 65535
+    error_message = "ingress_from_port must be between 0 and 65535."
+  }
+}
+
+variable "ingress_to_port" {
+  type        = number
+  default     = 443
+  description = "Last TCP port allowed by the security group ingress rules."
+
+  validation {
+    condition     = var.ingress_to_port >= 0 && var.ingress_to_port <= 65535
+    error_message = "ingress_to_port must be between 0 and 65535."
+  }
+}
+
 variable "vpc_options" {
   description = "List of maps of options for publishing slow logs to CloudWatch Logs."
   type = object({
@@ -106,6 +128,17 @@ variable "ebs_iops" {
   type        = any
   default     = 0
   description = "The baseline input/output (I/O) performance of EBS volumes attached to data nodes. Applicable only for the Provisioned IOPS EBS volume type"
+}
+
+variable "ebs_throughput" {
+  type        = number
+  default     = null
+  description = "Throughput in MiB/s for gp3 EBS volumes. Leave null for non-gp3 volumes or to preserve the provider default."
+
+  validation {
+    condition     = var.ebs_throughput == null || var.ebs_throughput >= 125
+    error_message = "ebs_throughput must be null or at least 125 MiB/s."
+  }
 }
 
 variable "encrypt_at_rest_enabled" {

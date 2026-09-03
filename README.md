@@ -10,7 +10,12 @@ de 5.40.0 até antes de 7.0.0.
 
 ## Exemplo
 
-Veja [`examples/complete`](examples/complete).
+Veja [`examples/complete`](examples/complete) para um domínio OpenSearch 3.7 com gp3 e HTTPS.
+
+`ebs_throughput` é opcional e se aplica exclusivamente a volumes gp3. Quando omitido, o módulo
+preserva o comportamento do provider. As portas de ingresso mantêm o default TCP 0–443 por
+retrocompatibilidade; para novos endpoints HTTPS, defina `ingress_from_port = 443` e
+`ingress_to_port = 443`.
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -83,6 +88,7 @@ No modules.
 | <a name="input_domain_endpoint_options_tls_security_policy"></a> [domain\_endpoint\_options\_tls\_security\_policy](#input\_domain\_endpoint\_options\_tls\_security\_policy) | The name of the TLS security policy that needs to be applied to the HTTPS endpoint | `string` | `"Policy-Min-TLS-1-2-2019-07"` | no |
 | <a name="input_domain_name"></a> [domain\_name](#input\_domain\_name) | Name of the domain | `string` | n/a | yes |
 | <a name="input_ebs_iops"></a> [ebs\_iops](#input\_ebs\_iops) | The baseline input/output (I/O) performance of EBS volumes attached to data nodes. Applicable only for the Provisioned IOPS EBS volume type | `any` | `0` | no |
+| <a name="input_ebs_throughput"></a> [ebs\_throughput](#input\_ebs\_throughput) | Throughput in MiB/s for gp3 EBS volumes. Leave null for non-gp3 volumes or to preserve the provider default. | `number` | `null` | no |
 | <a name="input_ebs_volume_size"></a> [ebs\_volume\_size](#input\_ebs\_volume\_size) | Optionally use EBS volumes for data storage by specifying volume size in GB | `any` | `10` | no |
 | <a name="input_ebs_volume_type"></a> [ebs\_volume\_type](#input\_ebs\_volume\_type) | Storage type of EBS volumes | `string` | `"gp2"` | no |
 | <a name="input_elasticsearch_version"></a> [elasticsearch\_version](#input\_elasticsearch\_version) | Version of Elasticsearch to deploy | `string` | `"7.1"` | no |
@@ -92,6 +98,8 @@ No modules.
 | <a name="input_iam_actions"></a> [iam\_actions](#input\_iam\_actions) | List of actions to allow for the IAM roles, _e.g._ `es:ESHttpGet`, `es:ESHttpPut`, `es:ESHttpPost` | `list(string)` | `[]` | no |
 | <a name="input_iam_authorizing_role_arns"></a> [iam\_authorizing\_role\_arns](#input\_iam\_authorizing\_role\_arns) | List of IAM role ARNs to permit to assume the Elasticsearch user role | `list(string)` | `[]` | no |
 | <a name="input_iam_role_arns"></a> [iam\_role\_arns](#input\_iam\_role\_arns) | List of IAM role ARNs to permit access to the Elasticsearch domain | `list(string)` | `[]` | no |
+| <a name="input_ingress_from_port"></a> [ingress\_from\_port](#input\_ingress\_from\_port) | First TCP port allowed by the security group ingress rules. | `number` | `0` | no |
+| <a name="input_ingress_to_port"></a> [ingress\_to\_port](#input\_ingress\_to\_port) | Last TCP port allowed by the security group ingress rules. | `number` | `443` | no |
 | <a name="input_instance_count"></a> [instance\_count](#input\_instance\_count) | Number of data nodes in the cluster | `any` | `1` | no |
 | <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | Elasticsearch instance type for data nodes in the cluster | `string` | `"t2.small.elasticsearch"` | no |
 | <a name="input_log_publishing_options"></a> [log\_publishing\_options](#input\_log\_publishing\_options) | List of maps of options for publishing slow logs to CloudWatch Logs. | `list(map(string))` | `[]` | no |
