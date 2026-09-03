@@ -19,8 +19,8 @@ resource "aws_security_group_rule" "ingress_security_groups" {
   count                    = var.enabled && var.vpc_options != null ? length(var.security_groups) : 0
   description              = "Allow inbound traffic from Security Groups"
   type                     = "ingress"
-  from_port                = 0
-  to_port                  = 443
+  from_port                = var.ingress_from_port
+  to_port                  = var.ingress_to_port
   protocol                 = "tcp"
   source_security_group_id = var.security_groups[count.index]
   security_group_id        = join("", aws_security_group.default[*].id)
@@ -30,8 +30,8 @@ resource "aws_security_group_rule" "ingress_cidr_blocks" {
   count             = var.enabled && var.vpc_options != null && length(var.allowed_cidr_blocks) > 0 ? 1 : 0
   description       = "Allow inbound traffic from CIDR blocks"
   type              = "ingress"
-  from_port         = 0
-  to_port           = 443
+  from_port         = var.ingress_from_port
+  to_port           = var.ingress_to_port
   protocol          = "tcp"
   cidr_blocks       = var.allowed_cidr_blocks
   security_group_id = join("", aws_security_group.default[*].id)
@@ -140,6 +140,7 @@ resource "aws_elasticsearch_domain" "default" {
     volume_size = var.ebs_volume_size
     volume_type = var.ebs_volume_type
     iops        = var.ebs_iops
+    throughput  = var.ebs_throughput
   }
 
   encrypt_at_rest {
@@ -226,6 +227,18 @@ resource "aws_elasticsearch_domain" "default" {
       }
     }
   }
+  lifecycle {
+    precondition {
+      condition     = var.ingress_from_port <= var.ingress_to_port
+      error_message = "ingress_from_port must not be greater than ingress_to_port."
+    }
+
+    precondition {
+      condition     = var.ebs_throughput == null || var.ebs_volume_type == "gp3"
+      error_message = "ebs_throughput can be set only when ebs_volume_type is gp3."
+    }
+  }
+
   tags       = var.tags
   depends_on = [aws_iam_service_linked_role.default]
 }
